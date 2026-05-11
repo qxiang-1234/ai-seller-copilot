@@ -1,5 +1,6 @@
 import { PlatformBadge } from "@/components/PlatformBadge";
 import type { SellerAgentResult } from "@/types/listing";
+import { CopyButton } from "@/components/CopyButton";
 
 type ListingResultProps = {
   /**
@@ -86,6 +87,10 @@ export function ListingResult({ result }: ListingResultProps) {
               <h4>
                 <PlatformBadge platform={platform} />
               </h4>
+
+              <CopyButton
+                text={`Title: ${listing.title}\n\n${listing.description}`}
+              />
 
               <p>
                 <strong>Title:</strong> {listing.title}
