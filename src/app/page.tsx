@@ -8,6 +8,24 @@ import { ListingResult } from "@/components/ListingResult";
 import { LoadingSkeleton } from "@/components/LoadingSkeleton";
 import type { SellerAgentInput, SellerAgentResult } from "@/types/listing";
 
+/**
+ * Convert page state into a simple progress status for AgentProgress.
+ */
+function getAgentProgressStatus(
+  isLoading: boolean,
+  result: SellerAgentResult | null,
+) {
+  if (isLoading) {
+    return "running";
+  }
+
+  if (result) {
+    return "completed";
+  }
+
+  return "idle";
+}
+
 type AgentApiResponse =
   | {
       success: true;
@@ -87,7 +105,7 @@ export default function Home() {
         </div>
 
         <div className={styles.card}>
-          <AgentProgress isLoading={isLoading} />
+          <AgentProgress status={getAgentProgressStatus(isLoading, result)} />
 
           {isLoading ? <LoadingSkeleton /> : <ListingResult result={result} />}
         </div>
