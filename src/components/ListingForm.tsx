@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import styles from "./ListingForm.module.css";
 import type { Platform, SellerAgentInput } from "@/types/listing";
 
 type ListingFormProps = {
@@ -10,6 +11,12 @@ type ListingFormProps = {
    */
   onSubmit: (input: SellerAgentInput) => void;
   isLoading: boolean;
+};
+
+type FormErrors = {
+  itemName?: string;
+  condition?: string;
+  targetPlatforms?: string;
 };
 
 const PLATFORM_OPTIONS: { label: string; value: Platform }[] = [
@@ -29,6 +36,9 @@ export function ListingForm({ onSubmit, isLoading }: ListingFormProps) {
     "facebook",
   ]);
 
+  // Store field-level validation errors.
+  const [errors, setErrors] = useState<FormErrors>({});
+
   function handlePlatformChange(platform: Platform) {
     /**
      * If the platform is already selected, remove it.
@@ -47,40 +57,69 @@ export function ListingForm({ onSubmit, isLoading }: ListingFormProps) {
     // Prevent the browser from refreshing the page when the form submits.
     event.preventDefault();
 
-    onSubmit({
+    const nextErrors = validateForm({
       itemName,
       condition,
-      features,
-      originalPrice,
+      targetPlatforms,
+    });
+
+    setErrors(nextErrors);
+
+    // If there are validation errors, stop here and do not call the API.
+    if (Object.keys(nextErrors).length > 0) {
+      return;
+    }
+
+    onSubmit({
+      itemName: itemName.trim(),
+      condition: condition.trim(),
+      features: features.trim(),
+      originalPrice: originalPrice.trim(),
       targetPlatforms,
     });
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div>
-        <label htmlFor="itemName">Item name</label>
+    <form className={styles.form} onSubmit={handleSubmit}>
+      <div className={styles.field}>
+        <label className={styles.label} htmlFor="itemName">
+          Item name
+        </label>
+
         <input
+          className={styles.input}
           id="itemName"
           value={itemName}
           onChange={(event) => setItemName(event.target.value)}
           placeholder="Floor lamp"
         />
+
+        {errors.itemName && <p className={styles.error}>{errors.itemName}</p>}
       </div>
 
-      <div>
-        <label htmlFor="condition">Condition</label>
+      <div className={styles.field}>
+        <label className={styles.label} htmlFor="condition">
+          Condition
+        </label>
+
         <input
+          className={styles.input}
           id="condition"
           value={condition}
           onChange={(event) => setCondition(event.target.value)}
           placeholder="Good"
         />
+
+        {errors.condition && <p className={styles.error}>{errors.condition}</p>}
       </div>
 
-      <div>
-        <label htmlFor="features">Features</label>
+      <div className={styles.field}>
+        <label className={styles.label} htmlFor="features">
+          Features
+        </label>
+
         <textarea
+          className={styles.textarea}
           id="features"
           value={features}
           onChange={(event) => setFeatures(event.target.value)}
@@ -88,9 +127,13 @@ export function ListingForm({ onSubmit, isLoading }: ListingFormProps) {
         />
       </div>
 
-      <div>
-        <label htmlFor="originalPrice">Original price</label>
+      <div className={styles.field}>
+        <label className={styles.label} htmlFor="originalPrice">
+          Original price
+        </label>
+
         <input
+          className={styles.input}
           id="originalPrice"
           value={originalPrice}
           onChange={(event) => setOriginalPrice(event.target.value)}
@@ -98,12 +141,13 @@ export function ListingForm({ onSubmit, isLoading }: ListingFormProps) {
         />
       </div>
 
-      <fieldset>
-        <legend>Target platforms</legend>
+      <fieldset className={styles.fieldset}>
+        <legend className={styles.legend}>Target platforms</legend>
 
         {PLATFORM_OPTIONS.map((platform) => (
-          <label key={platform.value}>
+          <label className={styles.checkboxLabel} key={platform.value}>
             <input
+              className={styles.checkbox}
               type="checkbox"
               checked={targetPlatforms.includes(platform.value)}
               onChange={() => handlePlatformChange(platform.value)}
@@ -111,11 +155,42 @@ export function ListingForm({ onSubmit, isLoading }: ListingFormProps) {
             {platform.label}
           </label>
         ))}
+
+        {errors.targetPlatforms && (
+          <p className={styles.error}>{errors.targetPlatforms}</p>
+        )}
       </fieldset>
 
-      <button type="submit" disabled={isLoading}>
+      <button className={styles.button} type="submit" disabled={isLoading}>
         {isLoading ? "Generating..." : "Generate listing"}
       </button>
     </form>
   );
+}
+
+/**
+ * Validate required form fields before calling the API.
+ *
+ * This gives users immediate feedback and avoids unnecessary API requests.
+ */
+function validateForm(input: {
+  itemName: string;
+  condition: string;
+  targetPlatforms: Platform[];
+}): FormErrors {
+  const errors: FormErrors = {};
+
+  if (!input.itemName.trim()) {
+    errors.itemName = "Item name is required.";
+  }
+
+  if (!input.condition.trim()) {
+    errors.condition = "Condition is required.";
+  }
+
+  if (input.targetPlatforms.length === 0) {
+    errors.targetPlatforms = "Please select at least one platform.";
+  }
+
+  return errors;
 }
