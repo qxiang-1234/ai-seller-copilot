@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import styles from "./CopyButton.module.css";
 
 type CopyButtonProps = {
   /**
@@ -37,8 +38,12 @@ export function CopyButton({ text }: CopyButtonProps) {
   }
 
   return (
-    <button type="button" onClick={handleCopy}>
-      {hasCopied ? "Copied!" : "Copy"}
+    <button
+      className={`${styles.button} ${hasCopied ? styles.buttonCopied : ""}`}
+      type="button"
+      onClick={handleCopy}
+    >
+      {hasCopied ? "Copied" : "Copy"}
     </button>
   );
 }

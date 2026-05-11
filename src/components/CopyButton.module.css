@@ -1,0 +1,26 @@
+.button {
+  border: 1px solid #d1d5db;
+  border-radius: 999px;
+  padding: 6px 12px;
+  background: #ffffff;
+  color: #374151;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.button:hover {
+  background: #f3f4f6;
+  border-color: #9ca3af;
+}
+
+.button:active {
+  background: #e5e7eb;
+}
+
+.buttonCopied {
+  border-color: #16a34a;
+  background: #f0fdf4;
+  color: #15803d;
+}

@@ -42,12 +42,6 @@
   margin-top: 0;
 }
 
-.card article {
-  border-top: 1px solid #e5e7eb;
-  padding-top: 16px;
-  margin-top: 16px;
-}
-
 .error {
   color: #b91c1c;
   font-weight: 600;

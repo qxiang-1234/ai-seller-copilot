@@ -1,3 +1,5 @@
+import styles from "./AgentProgress.module.css";
+
 type AgentProgressStatus = "idle" | "running" | "completed";
 
 type AgentProgressProps = {
@@ -22,19 +24,19 @@ const AGENT_STEPS = [
 
 export function AgentProgress({ status }: AgentProgressProps) {
   return (
-    <section>
-      <h3>Agent Workflow</h3>
+    <section className={styles.progress}>
+      <h3 className={styles.title}>Agent Workflow</h3>
 
-      <ol>
+      <ul className={styles.stepList}>
         {AGENT_STEPS.map((step, index) => (
-          <li key={step}>
-            <span>{getStepIcon(status)}</span>
+          <li className={styles.stepItem} key={step}>
+            <span className={styles.icon}>{getStepIcon(status)}</span>
             <span>
               Step {index + 1}: {step}
             </span>
           </li>
         ))}
-      </ol>
+      </ul>
     </section>
   );
 }

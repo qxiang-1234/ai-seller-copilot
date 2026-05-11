@@ -1,6 +1,7 @@
-import { PlatformBadge } from "@/components/PlatformBadge";
-import type { SellerAgentResult } from "@/types/listing";
 import { CopyButton } from "@/components/CopyButton";
+import { PlatformBadge } from "@/components/PlatformBadge";
+import styles from "./ListingResult.module.css";
+import type { SellerAgentResult } from "@/types/listing";
 
 type ListingResultProps = {
   /**
@@ -16,121 +17,127 @@ export function ListingResult({ result }: ListingResultProps) {
   }
 
   return (
-    <section>
-      <h2>Generated Result</h2>
+    <section className={styles.result}>
+      <h2 className={styles.title}>Generated Result</h2>
 
-      <div>
-        <h3>Item Attributes</h3>
+      <section className={styles.section}>
+        <h3 className={styles.sectionTitle}>Item Attributes</h3>
 
-        <p>
+        <p className={styles.field}>
           <strong>Category:</strong> {result.itemAttributes.category}
         </p>
 
-        <p>
+        <p className={styles.field}>
           <strong>Item:</strong> {result.itemAttributes.itemName}
         </p>
 
-        <p>
+        <p className={styles.field}>
           <strong>Condition:</strong> {result.itemAttributes.condition}
         </p>
 
         <strong>Features:</strong>
         {result.itemAttributes.features.length > 0 ? (
-          <ul>
+          <ul className={styles.list}>
             {result.itemAttributes.features.map((feature) => (
               <li key={feature}>{feature}</li>
             ))}
           </ul>
         ) : (
-          <p>No features provided.</p>
+          <p className={styles.empty}>No features provided.</p>
         )}
-      </div>
+      </section>
 
-      <div>
-        <h3>Missing Information</h3>
+      <section className={styles.section}>
+        <h3 className={styles.sectionTitle}>Missing Information</h3>
 
         {result.missingInfo.length > 0 ? (
-          <ul>
+          <ul className={styles.list}>
             {result.missingInfo.map((info) => (
               <li key={info}>{info}</li>
             ))}
           </ul>
         ) : (
-          <p>No major missing information detected.</p>
+          <p className={styles.empty}>No major missing information detected.</p>
         )}
-      </div>
+      </section>
 
-      <div>
-        <h3>Pricing</h3>
+      <section className={styles.section}>
+        <h3 className={styles.sectionTitle}>Pricing</h3>
 
-        <p>
+        <p className={styles.field}>
           <strong>Suggested range:</strong> {result.pricing.suggestedRange}
         </p>
 
-        <p>
+        <p className={styles.field}>
           <strong>Confidence:</strong> {result.pricing.confidence}
         </p>
 
-        <p>{result.pricing.reasoning}</p>
-      </div>
+        <p className={styles.description}>{result.pricing.reasoning}</p>
+      </section>
 
-      <div>
-        <h3>Platform Listings</h3>
+      <section className={styles.section}>
+        <h3 className={styles.sectionTitle}>Platform Listings</h3>
 
-        {Object.entries(result.platformListings).map(([platform, listing]) => {
-          if (!listing) {
-            return null;
-          }
+        <div className={styles.platformList}>
+          {Object.entries(result.platformListings).map(
+            ([platform, listing]) => {
+              if (!listing) {
+                return null;
+              }
 
-          return (
-            <article key={platform}>
-              <h4>
-                <PlatformBadge platform={platform} />
-              </h4>
+              return (
+                <article className={styles.platformCard} key={platform}>
+                  <div className={styles.platformHeader}>
+                    <h4 className={styles.platformTitle}>
+                      <PlatformBadge platform={platform} />
+                    </h4>
 
-              <CopyButton
-                text={`Title: ${listing.title}\n\n${listing.description}`}
-              />
+                    <CopyButton
+                      text={`Title: ${listing.title}\n\n${listing.description}`}
+                    />
+                  </div>
 
-              <p>
-                <strong>Title:</strong> {listing.title}
-              </p>
+                  <p className={styles.field}>
+                    <strong>Title:</strong> {listing.title}
+                  </p>
 
-              <p>
-                <strong>Description:</strong>
-              </p>
+                  <p className={styles.field}>
+                    <strong>Description:</strong>
+                  </p>
 
-              <p>{listing.description}</p>
-            </article>
-          );
-        })}
-      </div>
+                  <p className={styles.description}>{listing.description}</p>
+                </article>
+              );
+            },
+          )}
+        </div>
+      </section>
 
-      <div>
-        <h3>Review</h3>
+      <section className={styles.section}>
+        <h3 className={styles.sectionTitle}>Review</h3>
 
         <strong>Warnings:</strong>
         {result.review.warnings.length > 0 ? (
-          <ul>
+          <ul className={`${styles.list} ${styles.warningList}`}>
             {result.review.warnings.map((warning) => (
               <li key={warning}>{warning}</li>
             ))}
           </ul>
         ) : (
-          <p>No warnings.</p>
+          <p className={styles.empty}>No warnings.</p>
         )}
 
         <strong>Suggestions:</strong>
         {result.review.suggestions.length > 0 ? (
-          <ul>
+          <ul className={`${styles.list} ${styles.suggestionList}`}>
             {result.review.suggestions.map((suggestion) => (
               <li key={suggestion}>{suggestion}</li>
             ))}
           </ul>
         ) : (
-          <p>No suggestions.</p>
+          <p className={styles.empty}>No suggestions.</p>
         )}
-      </div>
+      </section>
     </section>
   );
 }

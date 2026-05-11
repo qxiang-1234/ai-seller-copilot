@@ -1,0 +1,76 @@
+.result {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.title {
+  margin: 0;
+  font-size: 24px;
+}
+
+.section {
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 16px;
+  background: #ffffff;
+}
+
+.sectionTitle {
+  margin: 0 0 12px;
+  font-size: 18px;
+}
+
+.field {
+  margin: 8px 0;
+  line-height: 1.5;
+}
+
+.list {
+  margin: 8px 0 0;
+  padding-left: 20px;
+}
+
+.platformList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.platformCard {
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 16px;
+  background: #f9fafb;
+}
+
+.platformHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.platformTitle {
+  margin: 0;
+  font-size: 16px;
+}
+
+.description {
+  white-space: pre-wrap;
+  line-height: 1.6;
+  color: #374151;
+}
+
+.warningList li {
+  color: #92400e;
+}
+
+.suggestionList li {
+  color: #2563eb;
+}
+
+.empty {
+  color: #6b7280;
+}
