@@ -1,66 +1,97 @@
-import Image from "next/image";
+"use client";
+
+import { useState } from "react";
 import styles from "./page.module.css";
+import { AgentProgress } from "@/components/AgentProgress";
+import { ListingForm } from "@/components/ListingForm";
+import { ListingResult } from "@/components/ListingResult";
+import { LoadingSkeleton } from "@/components/LoadingSkeleton";
+import type { SellerAgentInput, SellerAgentResult } from "@/types/listing";
+
+type AgentApiResponse =
+  | {
+      success: true;
+      data: SellerAgentResult;
+    }
+  | {
+      success: false;
+      error: string;
+    };
 
 export default function Home() {
+  // Store the latest agent result returned from /api/agent.
+  const [result, setResult] = useState<SellerAgentResult | null>(null);
+
+  // Track loading state so we can disable the button and show progress UI.
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Store user-friendly error message if the API call fails.
+  const [error, setError] = useState("");
+
+  async function handleGenerateListing(input: SellerAgentInput) {
+    setIsLoading(true);
+    setError("");
+    setResult(null);
+
+    try {
+      /**
+       * Send the form data to our Next.js API route.
+       * The API route will run runSellerAgent() and return structured JSON.
+       */
+      const response = await fetch("/api/agent", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(input),
+      });
+
+      const responseBody = (await response.json()) as AgentApiResponse;
+
+      if (!responseBody.success) {
+        throw new Error(responseBody.error);
+      }
+
+      setResult(responseBody.data);
+    } catch (error) {
+      /**
+       * Convert unknown errors into a readable message.
+       * This helps avoid showing ugly technical errors directly in the UI.
+       */
+      const message =
+        error instanceof Error ? error.message : "Failed to generate listing.";
+
+      setError(message);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className={styles.intro}>
-          <h1>To get started, edit the page.tsx file.</h1>
-          <p>
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <main className={styles.page}>
+      <section className={styles.hero}>
+        <h1>AI Seller Copilot</h1>
+        <p>
+          Generate second-hand marketplace listings with a simple agent
+          workflow.
+        </p>
+      </section>
+
+      <section className={styles.layout}>
+        <div className={styles.card}>
+          <h2>Item Details</h2>
+
+          <ListingForm onSubmit={handleGenerateListing} isLoading={isLoading} />
+
+          {error && <p className={styles.error}>{error}</p>}
         </div>
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className={styles.secondary}
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+        <div className={styles.card}>
+          <AgentProgress isLoading={isLoading} />
+
+          {isLoading ? <LoadingSkeleton /> : <ListingResult result={result} />}
         </div>
-      </main>
-    </div>
+      </section>
+    </main>
   );
 }
